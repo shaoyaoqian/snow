@@ -80,7 +80,7 @@ export default class Snow {
             opacity: ${this.opacity};
             background-image: radial-gradient(#fff 0%, rgba(255, 255, 255, 0) 60%);
             border-radius: 50%;
-            z-index: 0;
+            z-index: -100;
             pointer-events: none;
             transform: translate(${this.x}px, ${this.y}px) ${this.getRotate(this.sy, this.sx)};
         `
