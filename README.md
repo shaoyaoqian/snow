@@ -3,6 +3,7 @@
 ```
 step1: yarn
 step2: yarn start 
+step3: npm run build
 
 ```
 

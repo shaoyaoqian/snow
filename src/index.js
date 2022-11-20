@@ -14,6 +14,7 @@ export default class Snow {
         this.minWidth = 1.5
         // 透明度
         this.opacity = 0
+        this.maxopacity = 1.0
         // 水平位置
         this.x = 0
         // 重置位置
@@ -57,10 +58,10 @@ export default class Snow {
         this.isSwing = Math.random() > 1.1
 
         this.width = Math.random() * (this.maxWidth-this.minWidth)+this.minWidth
-        this.opacity = 0.4+0.4*Math.random()
+        this.maxopacity = 0.4+0.4*Math.random()
         this.x = Math.floor(Math.random() * (window.innerWidth - this.width))
         this.y = Math.floor(Math.random() * (window.innerHeight - this.width))
-        if (reset) { this.y = -2*this.width }
+        if (reset) { this.y = -10*this.width }
         this.sy = Math.random() * this.maxSpeed + this.minSpeed
         this.sx = 0
         this.z = isQuick ? Math.random() * 300 + 200 : 0
@@ -78,7 +79,7 @@ export default class Snow {
             width: ${10*this.width}px;
             height: ${10*this.width}px;
             opacity: ${this.opacity};
-            background-image: radial-gradient(#fff 0%, rgba(255, 255, 255, 0) 60%);
+            background-image: radial-gradient(#fff 0%, rgba(255, 255, 255, 0) 100%);
             border-radius: 50%;
             z-index: -100;
             pointer-events: none;
@@ -95,15 +96,17 @@ export default class Snow {
 
     move () {
 
-        this.sx += (-0.5+Math.random())*this.sy*0.01
+        this.sx += (-0.5+Math.random())*this.sy*0.05
         this.x += this.sx
         this.y += this.sy
+        this.opacity = (1.0-this.y/window.innerHeight)*this.maxopacity
         // 完全离开窗口就调一下初始化方法，另外还需要修改一下init方法，因为重新出现我们是希望它的y坐标为0或者小于0，这样就不会又凭空出现的感觉，而是从天上下来的
-        if (this.x < -this.width || this.x > window.innerWidth || this.y > window.innerHeight) {
+        if (this.x < -2*this.width || this.x > window.innerWidth+2*this.width || this.y > window.innerHeight) {
           this.init(true)
           this.setStyle()
         }
         this.el.style.transform = `translate3d(${this.x}px, ${this.y}px, ${this.z}px) ${this.getRotate(this.sy, this.sx)}`
+        this.el.style.opacity = this.opacity
       }
 
     getRotate(sy, sx) {
@@ -128,6 +131,16 @@ class Snows {
         }
     }
     moveSnow () {
+
+        let k = 0.1*window.innerWidth - this.snowList.length
+        if (k>=0){
+            for (let i = 0; i < k; i++) { 
+                let snow = new Snow(this.opt)
+                snow.render()
+                this.snowList.push(snow)
+            }
+        }
+
         window.requestAnimationFrame(() => {
             this.snowList.forEach((item) => {
                 item.move()
@@ -139,6 +152,6 @@ class Snows {
 
 new Snows({
     isRain: false,
-    num: 0.05*window.innerWidth,
+    num: 0.1*window.innerWidth,
     maxSpeed: 1
 })
